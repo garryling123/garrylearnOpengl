@@ -18,8 +18,20 @@ endif()
 if (WIN32)
     set(ICON glfw.rc)
 elseif (APPLE)
-    set(ICON glfw.icns)
+    set(ICON glfw.icns myColoredTranglefragmentShaderSource.fs myColoredTranglevertexShaderSource.vs myTextureWithboxFragmentShaderSource.fs myTextureWithboxVertexShaderSource.vs container.jpg awesomeface.png)
     set_source_files_properties(glfw.icns PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources")
+    set_source_files_properties(myColoredTranglefragmentShaderSource.fs PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources")
+    set_source_files_properties(myColoredTranglevertexShaderSource.vs PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources")
+    set_source_files_properties(myTextureWithboxFragmentShaderSource.fs PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources")
+    set_source_files_properties(myTextureWithboxVertexShaderSource.vs PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources")
+    set_source_files_properties(awesomeface.png PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources")
+    set_source_files_properties(container.jpg PROPERTIES
         MACOSX_PACKAGE_LOCATION "Resources")
 endif()
 
@@ -29,6 +41,9 @@ set(GETOPT "${GLFW_SOURCE_DIR}/deps/getopt.h"
            "${GLFW_SOURCE_DIR}/deps/getopt.c")
 set(TINYCTHREAD "${GLFW_SOURCE_DIR}/deps/tinycthread.h"
                 "${GLFW_SOURCE_DIR}/deps/tinycthread.c")
+set(READSHADER "${GLFW_SOURCE_DIR}/deps/loadshader.h")
+set(LOADIMAGE "${GLFW_SOURCE_DIR}/deps/stb_image.h")
+
 
 add_executable(boing WIN32 MACOSX_BUNDLE boing.c ${ICON} ${GLAD})
 add_executable(gears WIN32 MACOSX_BUNDLE gears.c ${ICON} ${GLAD})
@@ -39,13 +54,17 @@ add_executable(sharing WIN32 MACOSX_BUNDLE sharing.c ${ICON} ${GLAD})
 add_executable(simple WIN32 MACOSX_BUNDLE simple.c ${ICON} ${GLAD})
 add_executable(splitview WIN32 MACOSX_BUNDLE splitview.c ${ICON} ${GLAD})
 add_executable(wave WIN32 MACOSX_BUNDLE wave.c ${ICON} ${GLAD})
+add_executable(myWindow WIN32 MACOSX_BUNDLE myWindow.c ${ICON} ${GLAD})
+add_executable(myTrangle WIN32 MACOSX_BUNDLE myTrangle.c ${ICON} ${GLAD})
+add_executable(myColoredTrangle WIN32 MACOSX_BUNDLE myColoredTrangle.c ${ICON} ${GLAD} ${READSHADER})
+add_executable(myTextureWithbox WIN32 MACOSX_BUNDLE myTextureWithbox.c ${ICON} ${GLAD} ${READSHADER} ${LOADIMAGE})
 
 target_link_libraries(particles "${CMAKE_THREAD_LIBS_INIT}")
 if (RT_LIBRARY)
     target_link_libraries(particles "${RT_LIBRARY}")
 endif()
 
-set(WINDOWS_BINARIES boing gears heightmap particles sharing simple splitview wave)
+set(WINDOWS_BINARIES boing gears heightmap particles sharing simple splitview wave myWindow myTrangle myColoredTrangle myTextureWithbox)
 set(CONSOLE_BINARIES offscreen)
 
 set_target_properties(${WINDOWS_BINARIES} ${CONSOLE_BINARIES} PROPERTIES
@@ -66,9 +85,13 @@ if (APPLE)
     set_target_properties(simple PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Simple")
     set_target_properties(splitview PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "SplitView")
     set_target_properties(wave PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Wave")
+    set_target_properties(myWindow PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "MyWindow")
+    set_target_properties(myTrangle PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "MyTrangle")
+    set_target_properties(myColoredTrangle PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "MyColoredTrangle" RESOURCE "${RESOURCE_FILES}")
+    set_target_properties(myTextureWithbox PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "MyColoredTrangle" RESOURCE "${RESOURCE_FILES}")
 
     set_target_properties(${WINDOWS_BINARIES} PROPERTIES
-                          RESOURCE glfw.icns
+#                          RESOURCE ${RESOURCE_FILES}
                           MACOSX_BUNDLE_SHORT_VERSION_STRING ${GLFW_VERSION}
                           MACOSX_BUNDLE_LONG_VERSION_STRING ${GLFW_VERSION_FULL}
                           MACOSX_BUNDLE_ICON_FILE glfw.icns
